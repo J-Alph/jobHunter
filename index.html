@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JobPulse</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0c0b0a;
+  --bg2:      #141210;
+  --bg3:      #1c1916;
+  --border:   #2e2820;
+  --border2:  #3d342a;
+  --red:      #e8321a;
+  --red2:     #ff4d2e;
+  --orange:   #f07820;
+  --orange2:  #ffaa44;
+  --ember:    #ff6b00;
+  --text:     #f0ece6;
+  --muted:    #7a6e62;
+  --dim:      #4a4238;
+  --card:     #131110;
+
+  /* source accent colors — all in the fire palette */
+  --c-muse:     #e8321a;
+  --c-remotive: #f07820;
+  --c-jobicy:   #ffaa44;
+  --c-himal:    #ff6b00;
+  --c-adzuna:   #c8281a;
+  --c-jsearch:  #e05830;
+  --c-usajobs:  #d44010;
+  --c-remok:    #f09040;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior:smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow Condensed', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ── EMBER GLOW background ── */
+body::before {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% -10%, rgba(232,50,26,.18) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 80% 110%, rgba(240,120,32,.1) 0%, transparent 60%);
+}
+
+/* scanline texture */
+body::after {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(0,0,0,.12) 2px, rgba(0,0,0,.12) 4px
+  );
+  opacity:.4;
+}
+
+.wrap { max-width:1280px; margin:0 auto; padding:0 28px; position:relative; z-index:2; }
+
+/* ══════════════════════════════
+   SETTINGS DRAWER (slides in from right)
+══════════════════════════════ */
+#drawer-overlay {
+  display:none;
+  position:fixed; inset:0; z-index:900;
+  background:rgba(12,11,10,.7); backdrop-filter:blur(6px);
+}
+
+#drawer {
+  position:fixed; top:0; right:0; bottom:0;
+  width:min(480px, 100vw);
+  background:var(--bg2);
+  border-left:1px solid var(--border2);
+  z-index:901;
+  transform:translateX(100%);
+  transition:transform .35s cubic-bezier(.16,1,.3,1);
+  overflow-y:auto;
+  box-shadow:-20px 0 60px rgba(0,0,0,.6);
+}
+
+#drawer.open { transform:translateX(0); }
+
+.drawer-head {
+  position:sticky; top:0;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  padding:22px 28px;
+  display:flex; align-items:center; justify-content:space-between;
+  z-index:1;
+}
+
+.drawer-head h2 {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:28px; letter-spacing:1px; color:var(--text);
+}
+
+.drawer-head h2 span { color:var(--orange); }
+
+.close-btn {
+  width:36px; height:36px; border-radius:8px;
+  background:var(--bg3); border:1px solid var(--border2);
+  color:var(--muted); font-size:18px; line-height:1;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:.15s;
+}
+.close-btn:hover { color:var(--text); border-color:var(--dim); }
+
+.drawer-body { padding:24px 28px; }
+
+.drawer-notice {
+  background:rgba(240,120,32,.08);
+  border:1px solid rgba(240,120,32,.2);
+  border-radius:10px; padding:14px 16px; margin-bottom:24px;
+  font-size:14px; color:var(--orange2); line-height:1.6;
+}
+
+.drawer-notice strong { display:block; font-size:15px; margin-bottom:3px; }
+
+.key-saved-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  font-family:'IBM Plex Mono',monospace; font-size:10px;
+  padding:2px 8px; border-radius:4px;
+  background:rgba(240,120,32,.15); color:var(--orange);
+  border:1px solid rgba(240,120,32,.3); margin-left:8px;
+  vertical-align:middle;
+}
+
+.dsec {
+  margin-bottom:20px; padding:18px 20px;
+  background:var(--bg3); border-radius:12px;
+  border:1px solid var(--border);
+}
+
+.dsec-head {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:8px;
+}
+
+.dsec-name {
+  font-family:'Bebas Neue',sans-serif; font-size:18px;
+  letter-spacing:.5px; display:flex; align-items:center; gap:10px;
+}
+
+.ddot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+.free-tag {
+  font-family:'IBM Plex Mono',monospace; font-size:10px;
+  background:rgba(240,120,32,.12); color:var(--orange);
+  border:1px solid rgba(240,120,32,.25); padding:2px 7px; border-radius:4px;
+}
+
+.dlink {
+  font-family:'IBM Plex Mono',monospace; font-size:10px;
+  color:var(--orange2); border:1px solid rgba(240,170,68,.3);
+  padding:3px 10px; border-radius:6px; text-decoration:none; transition:.15s;
+  white-space:nowrap;
+}
+.dlink:hover { background:rgba(240,170,68,.1); }
+
+.ddesc { font-size:13px; color:var(--muted); margin-bottom:12px; line-height:1.5; }
+
+.dinputs { display:flex; gap:10px; flex-wrap:wrap; }
+.dig { flex:1; min-width:160px; }
+.dig label {
+  display:block; font-family:'IBM Plex Mono',monospace;
+  font-size:10px; color:var(--dim); margin-bottom:4px; letter-spacing:.5px;
+}
+.dig input {
+  width:100%; background:var(--bg);
+  border:1px solid var(--border2); color:var(--text);
+  font-family:'IBM Plex Mono',monospace; font-size:12px;
+  padding:8px 12px; border-radius:8px; outline:none; transition:.2s;
+}
+.dig input:focus { border-color:var(--orange); box-shadow:0 0 0 2px rgba(240,120,32,.12); }
+.dig input::placeholder { color:var(--dim); }
+
+.save-btn-row { display:flex; gap:10px; margin-top:24px; padding-top:20px; border-top:1px solid var(--border); }
+
+.btn-save {
+  flex:1; background:linear-gradient(135deg, var(--red), var(--orange));
+  color:#fff; border:none; padding:14px;
+  border-radius:10px; font-family:'Bebas Neue',sans-serif;
+  font-size:20px; letter-spacing:1px; cursor:pointer; transition:.2s;
+  box-shadow:0 4px 20px rgba(232,50,26,.3);
+}
+.btn-save:hover { box-shadow:0 6px 28px rgba(232,50,26,.5); transform:translateY(-1px); }
+
+.btn-clear {
+  background:var(--bg3); color:var(--muted);
+  border:1px solid var(--border2); padding:14px 18px;
+  border-radius:10px; font-family:'Bebas Neue',sans-serif;
+  font-size:18px; letter-spacing:1px; cursor:pointer; transition:.15s;
+}
+.btn-clear:hover { color:var(--text); border-color:var(--dim); }
+
+/* ══════════════════════════════
+   HEADER
+══════════════════════════════ */
+header {
+  padding:24px 0;
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+
+.logo {
+  font-family:'Bebas Neue',sans-serif; font-size:32px;
+  letter-spacing:2px; line-height:1;
+  background:linear-gradient(90deg, var(--red), var(--orange2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.hright { display:flex; align-items:center; gap:12px; }
+
+.keys-status {
+  font-family:'IBM Plex Mono',monospace; font-size:11px;
+  padding:5px 12px; border-radius:6px;
+  display:flex; align-items:center; gap:6px;
+}
+.keys-status.has-keys { color:var(--orange); background:rgba(240,120,32,.1); border:1px solid rgba(240,120,32,.2); }
+.keys-status.no-keys  { color:var(--muted); background:var(--bg3); border:1px solid var(--border); }
+
+.settings-btn {
+  display:flex; align-items:center; gap:7px;
+  font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:.5px;
+  color:var(--muted); background:var(--bg3);
+  border:1px solid var(--border2); padding:7px 16px;
+  border-radius:8px; cursor:pointer; transition:.15s;
+}
+.settings-btn:hover { color:var(--orange); border-color:var(--orange); }
+.settings-btn svg { transition:.15s; }
+.settings-btn:hover svg { stroke:var(--orange); }
+
+/* ══════════════════════════════
+   HERO
+══════════════════════════════ */
+.hero { padding:52px 0 36px; }
+
+.hero-inner {
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+}
+
+.hero-eyebrow {
+  font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:3px;
+  color:var(--orange); text-transform:uppercase;
+  margin-bottom:16px; display:flex; align-items:center; gap:10px;
+}
+
+.eyebrow-line { width:32px; height:1px; background:var(--orange); opacity:.5; }
+
+.hero h1 {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(72px, 12vw, 140px);
+  letter-spacing:4px; line-height:.95;
+  margin-bottom:20px;
+}
+
+.hero h1 .line1 { display:block; color:var(--text); }
+.hero h1 .line2 {
+  display:block;
+  background:linear-gradient(90deg, var(--red), var(--orange), var(--orange2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+
+.hero-sub {
+  font-size:15px; color:var(--muted); letter-spacing:.5px;
+  margin-bottom:40px; line-height:1.6;
+}
+
+.src-count {
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:'IBM Plex Mono',monospace; font-size:11px;
+  color:var(--orange2); background:rgba(240,170,68,.08);
+  border:1px solid rgba(240,170,68,.2); padding:4px 12px; border-radius:20px;
+  margin-bottom:40px;
+}
+
+.src-count .blink {
+  width:7px; height:7px; border-radius:50%; background:var(--red);
+  animation:blink 1.8s ease infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+/* ══════════════════════════════
+   SEARCH BAR
+══════════════════════════════ */
+.sbar-wrap { width:100%; max-width:900px; margin:0 auto 20px; }
+
+.sbar {
+  display:flex; overflow:hidden;
+  border:1px solid var(--border2); border-radius:12px;
+  background:var(--bg2);
+  box-shadow:0 0 0 0 rgba(232,50,26,0);
+  transition:border-color .2s, box-shadow .2s;
+}
+
+.sbar:focus-within {
+  border-color:var(--red);
+  box-shadow:0 0 0 3px rgba(232,50,26,.15), 0 0 40px rgba(232,50,26,.08);
+}
+
+.sf, .lf {
+  display:flex; align-items:center; gap:10px; padding:14px 18px;
+}
+.sf { flex:2; border-right:1px solid var(--border2); }
+.lf { flex:1; }
+
+.sf svg, .lf svg { color:var(--dim); flex-shrink:0; }
+
+.sf input, .lf input {
+  background:none; border:none; outline:none;
+  color:var(--text); font-family:'Barlow Condensed',sans-serif;
+  font-size:17px; font-weight:500; width:100%; letter-spacing:.3px;
+}
+.sf input::placeholder, .lf input::placeholder { color:var(--dim); }
+
+.go-btn {
+  background:linear-gradient(135deg, var(--red) 0%, var(--ember) 100%);
+  color:#fff; border:none; padding:0 32px;
+  font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px;
+  cursor:pointer; transition:.2s; white-space:nowrap;
+  position:relative; overflow:hidden;
+}
+.go-btn::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg, var(--orange) 0%, var(--orange2) 100%);
+  opacity:0; transition:opacity .2s;
+}
+.go-btn:hover::before { opacity:1; }
+.go-btn span { position:relative; z-index:1; }
+.go-btn:disabled { opacity:.4; cursor:not-allowed; }
+
+/* ══════════════════════════════
+   FILTER CHIPS
+══════════════════════════════ */
+.frows { display:flex; flex-direction:column; gap:8px; margin-bottom:6px; }
+
+.frow { display:flex; gap:6px; flex-wrap:wrap; justify-content:center; align-items:center; }
+
+.flabel {
+  font-family:'IBM Plex Mono',monospace; font-size:10px;
+  letter-spacing:1px; color:var(--dim); text-transform:uppercase;
+  white-space:nowrap;
+}
+
+.chip {
+  font-family:'IBM Plex Mono',monospace; font-size:11px;
+  padding:5px 13px; border-radius:6px;
+  border:1px solid var(--border2); background:var(--bg2);
+  color:var(--muted); cursor:pointer; transition:.15s; letter-spacing:.3px;
+}
+.chip:hover { border-color:var(--orange); color:var(--orange2); }
+.chip.on {
+  background:rgba(240,120,32,.12);
+  border-color:var(--orange); color:var(--orange2);
+}
+
+/* ══════════════════════════════
+   SOURCE PILLS
+══════════════════════════════ */
+.srcrow {
+  display:flex; gap:6px; justify-content:center;
+  flex-wrap:wrap; margin-top:16px;
+}
+
+.spill {
+  font-family:'IBM Plex Mono',monospace; font-size:10px;
+  padding:5px 12px; border-radius:6px;
+  background:var(--bg3); border:1px solid var(--border);
+  color:var(--dim); cursor:pointer; transition:.15s;
+  display:flex; align-items:center; gap:6px; user-select:none;
+  letter-spacing:.3px;
+}
+.spill .sd { width:6px; height:6px; border-radius:50%; background:var(--dim); transition:.15s; }
+
+.spill.on { color:var(--muted); border-color:var(--border2); }
+.spill.on .sd { background:var(--orange); }
+.spill.on:hover { color:var(--orange2); border-color:var(--orange); }
+
+/* ══════════════════════════════
+   STATUS BAR
+══════════════════════════════ */
+#statusbar {
+  display:none; gap:6px; flex-wrap:wrap;
+  justify-content:center; margin-top:14px;
+}
+
+.sit {
+  font-family:'IBM Plex Mono',monospace; font-size:10px;
+  padding:4px 10px; border-radius:4px;
+  border:1px solid var(--border); background:var(--bg3);
+  color:var(--dim); transition:all .25s; letter-spacing:.3px;
+}
+.sit.loading { color:var(--orange);  border-color:rgba(240,120,32,.4); background:rgba(240,120,32,.06); }
+.sit.done    { color:var(--orange2); border-color:rgba(255,170,68,.4); background:rgba(255,170,68,.06); }
+.sit.error   { color:#ff5555;        border-color:rgba(255,85,85,.4);  background:rgba(255,85,85,.06); }
+.sit.skipped { color:var(--dim);     border-color:var(--border); }
+
+/* ══════════════════════════════
+   RESULTS
+══════════════════════════════ */
+#rsec { display:none; padding-top:16px; }
+
+.rhead {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:18px; padding-bottom:14px;
+  border-bottom:1px solid var(--border);
+}
+
+.rcount {
+  font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--muted);
+}
+.rcount strong { color:var(--orange2); }
+
+.rsort {
+  background:var(--bg2); border:1px solid var(--border2);
+  color:var(--muted); font-family:'IBM Plex Mono',monospace;
+  font-size:11px; padding:6px 12px; border-radius:7px; outline:none; cursor:pointer;
+}
+.rsort option { background:var(--bg2); }
+
+#rgrid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(360px,1fr));
+  gap:14px; margin-bottom:80px;
+}
+
+/* ══════════════════════════════
+   JOB CARD
+══════════════════════════════ */
+.jcard {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px; padding:22px;
+  position:relative; overflow:hidden;
+  transition:border-color .2s, transform .2s, box-shadow .2s;
+  animation:fadeUp .4s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* left accent bar */
+.jcard::after {
+  content:''; position:absolute;
+  left:0; top:0; bottom:0; width:3px;
+  opacity:.6; transition:opacity .2s;
+}
+
+.jcard:hover {
+  border-color:var(--border2);
+  transform:translateY(-3px);
+  box-shadow:0 12px 40px rgba(0,0,0,.5), 0 0 20px rgba(232,50,26,.05);
+}
+.jcard:hover::after { opacity:1; }
+
+/* accent colors per source */
+.jcard[data-s="muse"]::after      { background:var(--c-muse); }
+.jcard[data-s="remotive"]::after  { background:var(--c-remotive); }
+.jcard[data-s="jobicy"]::after    { background:var(--c-jobicy); }
+.jcard[data-s="himalayas"]::after { background:var(--c-himal); }
+.jcard[data-s="adzuna"]::after    { background:var(--c-adzuna); }
+.jcard[data-s="jsearch"]::after   { background:var(--c-jsearch); }
+.jcard[data-s="usajobs"]::after   { background:var(--c-usajobs); }
+.jcard[data-s="remok"]::after     { background:var(--c-remok); }
+
+.ctop {
+  display:flex; align-items:flex-start;
+  justify-content:space-between; gap:10px; margin-bottom:14px;
+  padding-left:10px;
+}
+
+.clogo {
+  width:44px; height:44px; border-radius:10px;
+  background:var(--bg3); border:1px solid var(--border2);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Bebas Neue',sans-serif; font-size:15px;
+  letter-spacing:.5px; flex-shrink:0;
+}
+
+.sbadge {
+  font-family:'IBM Plex Mono',monospace; font-size:10px;
+  padding:3px 8px; border-radius:4px;
+  background:rgba(240,120,32,.08);
+  color:var(--orange); border:1px solid rgba(240,120,32,.2);
+}
+
+.jtitle {
+  font-family:'Barlow Condensed',sans-serif; font-weight:700;
+  font-size:18px; line-height:1.25; margin-bottom:3px;
+  padding-left:10px; color:var(--text);
+}
+
+.jco {
+  font-size:14px; color:var(--muted); margin-bottom:12px;
+  padding-left:10px;
+}
+
+.jmeta {
+  display:flex; gap:6px; flex-wrap:wrap;
+  margin-bottom:12px; padding-left:10px;
+}
+
+.mp {
+  font-size:12px; padding:3px 9px; border-radius:5px;
+  background:var(--bg3); color:var(--muted);
+  display:flex; align-items:center; gap:4px; border:1px solid var(--border);
+}
+.mp.loc { color:var(--orange2); border-color:rgba(255,170,68,.2); background:rgba(255,170,68,.05); }
+.mp.sal { color:#7ddc78; border-color:rgba(125,220,120,.2); background:rgba(125,220,120,.05); }
+.mp.typ { color:var(--orange); border-color:rgba(240,120,32,.2); background:rgba(240,120,32,.05); }
+
+.jdesc {
+  font-size:13px; color:var(--muted); line-height:1.65;
+  margin-bottom:14px; padding-left:10px;
+  display:-webkit-box; -webkit-line-clamp:3;
+  -webkit-box-orient:vertical; overflow:hidden;
+}
+
+.cfoot {
+  display:flex; align-items:center; justify-content:space-between;
+  padding-left:10px; padding-top:12px;
+  border-top:1px solid var(--border);
+}
+
+.jtime {
+  font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--dim);
+}
+
+.abtn {
+  font-family:'Bebas Neue',sans-serif; font-size:15px; letter-spacing:1px;
+  padding:7px 18px; border-radius:7px;
+  background:linear-gradient(135deg, var(--red), var(--ember));
+  color:#fff; border:none; cursor:pointer;
+  text-decoration:none; display:inline-block; transition:.15s;
+  box-shadow:0 2px 10px rgba(232,50,26,.25);
+}
+.abtn:hover {
+  background:linear-gradient(135deg, var(--red2), var(--orange));
+  box-shadow:0 4px 18px rgba(232,50,26,.4);
+  transform:translateY(-1px);
+}
+
+/* ── STATES ── */
+.statebox {
+  grid-column:1/-1; text-align:center;
+  padding:80px 20px; color:var(--muted);
+}
+.statebox .ico { font-size:44px; margin-bottom:14px; display:block; }
+.statebox h3 {
+  font-family:'Bebas Neue',sans-serif; font-size:28px;
+  letter-spacing:1px; color:var(--text); margin-bottom:8px;
+}
+.statebox p { font-size:14px; line-height:1.7; }
+
+.spin {
+  width:36px; height:36px;
+  border:3px solid var(--border2);
+  border-top-color:var(--red);
+  border-right-color:var(--orange);
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+  margin:0 auto 16px;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* ── DIVIDER ── */
+.divider {
+  height:1px; background:linear-gradient(90deg, transparent, var(--border2), transparent);
+  margin:8px 0;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
+::-webkit-scrollbar-thumb:hover { background:var(--red); }
+
+/* ── MOBILE ── */
+@media(max-width:640px) {
+  .sbar { flex-direction:column; }
+  .sf,.lf { border-right:none; border-bottom:1px solid var(--border2); }
+  .go-btn { padding:16px; }
+  #rgrid { grid-template-columns:1fr; }
+  .hero h1 { font-size:72px; }
+  #drawer { width:100vw; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     SETTINGS DRAWER
+══════════════════════════════ -->
+<div id="drawer-overlay" onclick="closeDrawer()"></div>
+<div id="drawer">
+  <div class="drawer-head">
+    <h2>API <span>KEYS</span></h2>
+    <button class="close-btn" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body">
+
+    <div class="drawer-notice">
+      <strong>🔒 Keys live in YOUR browser only</strong>
+      Saved once to localStorage — never sent anywhere, never leave your device. You won't be asked again until you clear them.
+    </div>
+
+    <!-- Free sources notice -->
+    <div class="dsec" style="border-color:rgba(240,120,32,.3);">
+      <div class="dsec-head">
+        <div class="dsec-name" style="color:var(--orange2)">
+          ✅ FREE SOURCES — NO KEYS NEEDED
+        </div>
+      </div>
+      <div class="ddesc" style="color:var(--muted);">
+        <strong style="color:var(--text)">The Muse · Remotive · Jobicy · Himalayas · RemoteOK</strong><br>
+        These 5 sources work immediately with zero setup. Keys below unlock 3 additional sources.
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Adzuna -->
+    <div class="dsec">
+      <div class="dsec-head">
+        <div class="dsec-name"><div class="ddot" style="background:var(--c-adzuna)"></div>ADZUNA</div>
+        <a class="dlink" href="https://developer.adzuna.com/signup" target="_blank">Free signup →</a>
+      </div>
+      <div class="ddesc">Free · 250 req/mo · Large US general job aggregator</div>
+      <div class="dinputs">
+        <div class="dig"><label>APP ID</label><input id="az-id" type="text" placeholder="a1b2c3d4"/></div>
+        <div class="dig"><label>APP KEY</label><input id="az-key" type="password" placeholder="your key"/></div>
+      </div>
+    </div>
+
+    <!-- JSearch -->
+    <div class="dsec">
+      <div class="dsec-head">
+        <div class="dsec-name"><div class="ddot" style="background:var(--c-jsearch)"></div>JSEARCH</div>
+        <a class="dlink" href="https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch" target="_blank">Free signup →</a>
+      </div>
+      <div class="ddesc">Free · 200 req/mo · LinkedIn, Indeed, Glassdoor, Google Jobs</div>
+      <div class="dinputs">
+        <div class="dig"><label>RAPIDAPI KEY</label><input id="js-key" type="password" placeholder="your key"/></div>
+      </div>
+    </div>
+
+    <!-- USAJobs -->
+    <div class="dsec">
+      <div class="dsec-head">
+        <div class="dsec-name"><div class="ddot" style="background:var(--c-usajobs)"></div>USAJOBS</div>
+        <a class="dlink" href="https://developer.usajobs.gov/apirequest/" target="_blank">Free signup →</a>
+      </div>
+      <div class="ddesc">Free · Unlimited · Official US federal government jobs</div>
+      <div class="dinputs">
+        <div class="dig"><label>EMAIL</label><input id="usa-email" type="email" placeholder="your email"/></div>
+        <div class="dig"><label>AUTH KEY</label><input id="usa-key" type="password" placeholder="your key"/></div>
+      </div>
+    </div>
+
+    <!-- The Muse optional -->
+    <div class="dsec">
+      <div class="dsec-head">
+        <div class="dsec-name">
+          <div class="ddot" style="background:var(--c-muse)"></div>
+          THE MUSE
+          <span class="free-tag">NO KEY NEEDED</span>
+        </div>
+        <a class="dlink" href="https://www.themuse.com/developers/api/v2" target="_blank">Optional →</a>
+      </div>
+      <div class="ddesc">Works free. Key gives higher rate limit.</div>
+      <div class="dinputs">
+        <div class="dig"><label>API KEY (optional)</label><input id="mu-key" type="password" placeholder="leave blank"/></div>
+      </div>
+    </div>
+
+    <div class="save-btn-row">
+      <button class="btn-save" onclick="saveKeys()">SAVE KEYS</button>
+      <button class="btn-clear" onclick="clearKeys()">CLEAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     MAIN APP
+══════════════════════════════ -->
+<div class="wrap">
+  <header>
+    <div class="logo">JOBPULSE</div>
+    <div class="hright">
+      <div class="keys-status no-keys" id="keys-status">
+        <span id="keys-status-text">No API keys saved</span>
+      </div>
+      <button class="settings-btn" onclick="openDrawer()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        API KEYS
+      </button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">
+        <div class="eyebrow-line"></div>
+        LIVE JOB INTELLIGENCE
+        <div class="eyebrow-line"></div>
+      </div>
+      <h1>
+        <span class="line1">FIND YOUR</span>
+        <span class="line2">NEXT MOVE</span>
+      </h1>
+      <p class="hero-sub">Real-time results pulled from 8 job sources simultaneously</p>
+      <div class="src-count">
+        <div class="blink"></div>
+        8 SOURCES ACTIVE — 5 FREE + 3 WITH KEYS
+      </div>
+
+      <!-- Search -->
+      <div class="sbar-wrap">
+        <div class="sbar">
+          <div class="sf">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input id="kw" type="text" placeholder="Job title, skill, company…"/>
+          </div>
+          <div class="lf">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <input id="loc" type="text" placeholder="City, state, or Remote"/>
+          </div>
+          <button class="go-btn" id="sbtn" onclick="doSearch()">
+            <span>SEARCH</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="frows">
+        <div class="frow">
+          <span class="flabel">Posted:</span>
+          <div class="chip on"  data-d="any" onclick="setChip(this,'d')">Any time</div>
+          <div class="chip"     data-d="1"   onclick="setChip(this,'d')">Today</div>
+          <div class="chip"     data-d="3"   onclick="setChip(this,'d')">3 days</div>
+          <div class="chip"     data-d="7"   onclick="setChip(this,'d')">1 week</div>
+          <div class="chip"     data-d="14"  onclick="setChip(this,'d')">2 weeks</div>
+          <div class="chip"     data-d="30"  onclick="setChip(this,'d')">1 month</div>
+          <div class="chip"     data-d="90"  onclick="setChip(this,'d')">3 months</div>
+        </div>
+        <div class="frow">
+          <span class="flabel">Type:</span>
+          <div class="chip on"  data-t="all"        onclick="setChip(this,'t')">All</div>
+          <div class="chip"     data-t="Full-time"  onclick="setChip(this,'t')">Full-time</div>
+          <div class="chip"     data-t="Part-time"  onclick="setChip(this,'t')">Part-time</div>
+          <div class="chip"     data-t="Contract"   onclick="setChip(this,'t')">Contract</div>
+          <div class="chip"     data-t="Internship" onclick="setChip(this,'t')">Internship</div>
+          <div class="chip"     data-t="Remote"     onclick="setChip(this,'t')">Remote</div>
+        </div>
+      </div>
+
+      <!-- Source toggles -->
+      <div class="srcrow">
+        <div class="spill on" data-s="muse"      onclick="toggleSrc(this)"><div class="sd"></div>The Muse</div>
+        <div class="spill on" data-s="remotive"  onclick="toggleSrc(this)"><div class="sd"></div>Remotive</div>
+        <div class="spill on" data-s="jobicy"    onclick="toggleSrc(this)"><div class="sd"></div>Jobicy</div>
+        <div class="spill on" data-s="himalayas" onclick="toggleSrc(this)"><div class="sd"></div>Himalayas</div>
+        <div class="spill on" data-s="remok"     onclick="toggleSrc(this)"><div class="sd"></div>RemoteOK</div>
+        <div class="spill on" data-s="adzuna"    onclick="toggleSrc(this)"><div class="sd"></div>Adzuna</div>
+        <div class="spill on" data-s="jsearch"   onclick="toggleSrc(this)"><div class="sd"></div>JSearch</div>
+        <div class="spill on" data-s="usajobs"   onclick="toggleSrc(this)"><div class="sd"></div>USAJobs</div>
+      </div>
+
+      <!-- Status bar -->
+      <div id="statusbar">
+        <div class="sit" id="st-muse">The Muse</div>
+        <div class="sit" id="st-remotive">Remotive</div>
+        <div class="sit" id="st-jobicy">Jobicy</div>
+        <div class="sit" id="st-himalayas">Himalayas</div>
+        <div class="sit" id="st-remok">RemoteOK</div>
+        <div class="sit" id="st-adzuna">Adzuna</div>
+        <div class="sit" id="st-jsearch">JSearch</div>
+        <div class="sit" id="st-usajobs">USAJobs</div>
+      </div>
+    </div>
+  </section>
+
+  <div id="rsec">
+    <div class="rhead">
+      <div class="rcount" id="rc"></div>
+      <select class="rsort" id="sortsel" onchange="render()">
+        <option value="recent">Most Recent</option>
+        <option value="source">By Source</option>
+      </select>
+    </div>
+    <div id="rgrid"></div>
+  </div>
+</div>
+
+<script>
+// ── State ──
+let keys = {};
+let jobs = [];
+let activeDays = 'any';
+let activeType = 'all';
+let activeSrcs = new Set(['muse','remotive','jobicy','himalayas','remok','adzuna','jsearch','usajobs']);
+
+// ── Drawer ──
+function openDrawer() {
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawer-overlay').style.display = 'block';
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').style.display = 'none';
+}
+
+// ── Keys ──
+function saveKeys() {
+  keys = {
+    azId:      document.getElementById('az-id').value.trim(),
+    azKey:     document.getElementById('az-key').value.trim(),
+    js:        document.getElementById('js-key').value.trim(),
+    usaEmail:  document.getElementById('usa-email').value.trim(),
+    usaKey:    document.getElementById('usa-key').value.trim(),
+    muse:      document.getElementById('mu-key').value.trim(),
+  };
+  localStorage.setItem('jp4_keys', JSON.stringify(keys));
+  updateKeyStatus();
+  closeDrawer();
+}
+
+function clearKeys() {
+  if (!confirm('Clear all saved API keys?')) return;
+  localStorage.removeItem('jp4_keys');
+  keys = {};
+  ['az-id','az-key','js-key','usa-email','usa-key','mu-key'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  updateKeyStatus();
+}
+
+function loadKeys() {
+  const s = localStorage.getItem('jp4_keys');
+  if (!s) return;
+  keys = JSON.parse(s);
+  if (keys.azId)      document.getElementById('az-id').value    = keys.azId;
+  if (keys.azKey)     document.getElementById('az-key').value   = keys.azKey;
+  if (keys.js)        document.getElementById('js-key').value   = keys.js;
+  if (keys.usaEmail)  document.getElementById('usa-email').value= keys.usaEmail;
+  if (keys.usaKey)    document.getElementById('usa-key').value  = keys.usaKey;
+  if (keys.muse)      document.getElementById('mu-key').value   = keys.muse;
+}
+
+function updateKeyStatus() {
+  const count = [keys.azId && keys.azKey, keys.js, keys.usaEmail && keys.usaKey]
+    .filter(Boolean).length;
+  const el = document.getElementById('keys-status');
+  const txt = document.getElementById('keys-status-text');
+  if (count > 0) {
+    el.className = 'keys-status has-keys';
+    txt.textContent = `${count}/3 keys saved`;
+  } else {
+    el.className = 'keys-status no-keys';
+    txt.textContent = 'No API keys saved';
+  }
+}
+
+// ── Filters ──
+function setChip(el, g) {
+  document.querySelectorAll(`[data-${g}]`).forEach(e => e.classList.remove('on'));
+  el.classList.add('on');
+  if (g === 'd') activeDays = el.dataset.d; else activeType = el.dataset.t;
+  if (jobs.length) render();
+}
+
+function toggleSrc(el) {
+  const s = el.dataset.s;
+  el.classList.toggle('on');
+  activeSrcs.has(s) ? activeSrcs.delete(s) : activeSrcs.add(s);
+  if (jobs.length) render();
+}
+
+// ── Status bar ──
+const srcNames = { muse:'The Muse', remotive:'Remotive', jobicy:'Jobicy',
+  himalayas:'Himalayas', remok:'RemoteOK', adzuna:'Adzuna',
+  jsearch:'JSearch', usajobs:'USAJobs' };
+
+function setSt(src, state) {
+  const el = document.getElementById('st-' + src);
+  if (!el) return;
+  const icons = { loading:'⟳ ', done:'✓ ', error:'✕ ', skipped:'— ' };
+  el.className = 'sit ' + state;
+  el.textContent = (icons[state]||'') + srcNames[src];
+}
+
+function showSB() { document.getElementById('statusbar').style.display = 'flex'; }
+
+// ── Utils ──
+function daysAgo(ds) {
+  if (!ds) return 999;
+  try { return Math.max(0, Math.floor((Date.now() - new Date(ds)) / 86400000)); }
+  catch { return 999; }
+}
+
+function fmtDays(d) {
+  if (d <= 0)  return 'Today';
+  if (d === 1) return 'Yesterday';
+  if (d < 7)   return d + 'd ago';
+  if (d < 30)  return Math.floor(d/7) + 'w ago';
+  if (d < 365) return Math.floor(d/30) + 'mo ago';
+  return '1y+ ago';
+}
+
+function strip(s) { return (s||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim(); }
+
+// ── Fetchers ──
+async function fetchMuse(kw, loc) {
+  if (!activeSrcs.has('muse')) { setSt('muse','skipped'); return []; }
+  setSt('muse','loading');
+  try {
+    const p = new URLSearchParams({ descending:true, page:1 });
+    if (kw) p.set('name', kw);
+    if (loc) p.set('location', loc);
+    if (keys.muse) p.set('api_key', keys.muse);
+    const r = await fetch(`https://www.themuse.com/api/public/jobs?${p}`);
+    if (!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    setSt('muse','done');
+    return (d.results||[]).map(j => ({
+      id:'mu-'+j.id, src:'muse',
+      title:j.name, company:j.company?.name||'Unknown',
+      location:j.locations?.map(l=>l.name).join(', ')||'Unknown',
+      type:j.type==='part_time'?'Part-time':j.type==='contract'?'Contract':j.type==='internship'?'Internship':'Full-time',
+      salary:'Not disclosed',
+      desc:strip(j.contents).slice(0,280),
+      days:daysAgo(j.publication_date), url:j.refs?.landing_page||'#',
+    }));
+  } catch(e) { setSt('muse','error'); return []; }
+}
+
+async function fetchRemotive(kw) {
+  if (!activeSrcs.has('remotive')) { setSt('remotive','skipped'); return []; }
+  setSt('remotive','loading');
+  try {
+    const url = `https://remotive.com/api/remote-jobs?limit=20${kw?'&search='+encodeURIComponent(kw):''}`;
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    setSt('remotive','done');
+    return (d.jobs||[]).map(j => ({
+      id:'rm-'+j.id, src:'remotive',
+      title:j.title, company:j.company_name||'Unknown',
+      location:j.candidate_required_location||'Remote', type:'Remote',
+      salary:j.salary||'Not disclosed',
+      desc:strip(j.description).slice(0,280),
+      days:daysAgo(j.publication_date), url:j.url||'#',
+    }));
+  } catch(e) { setSt('remotive','error'); return []; }
+}
+
+async function fetchJobicy(kw) {
+  if (!activeSrcs.has('jobicy')) { setSt('jobicy','skipped'); return []; }
+  setSt('jobicy','loading');
+  try {
+    const p = new URLSearchParams({ count:20, geo:'usa' });
+    if (kw) p.set('tag', kw);
+    const r = await fetch(`https://jobicy.com/api/v2/remote-jobs?${p}`);
+    if (!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    setSt('jobicy','done');
+    return (d.jobs||[]).map(j => ({
+      id:'jc-'+j.id, src:'jobicy',
+      title:j.jobTitle, company:j.companyName||'Unknown',
+      location:j.jobGeo||'USA',
+      type:j.jobType==='part-time'?'Part-time':j.jobType==='freelance'?'Contract':j.jobType==='internship'?'Internship':'Full-time',
+      salary:j.annualSalaryMin?`$${Number(j.annualSalaryMin).toLocaleString()} – $${Number(j.annualSalaryMax||j.annualSalaryMin).toLocaleString()}`:'Not disclosed',
+      desc:strip(j.jobDescription||j.jobExcerpt||'').slice(0,280),
+      days:daysAgo(j.pubDate), url:j.url||'#',
+    }));
+  } catch(e) { setSt('jobicy','error'); return []; }
+}
+
+async function fetchHimalayas(kw) {
+  if (!activeSrcs.has('himalayas')) { setSt('himalayas','skipped'); return []; }
+  setSt('himalayas','loading');
+  try {
+    const url = `https://himalayas.app/jobs/api?limit=20${kw?'&q='+encodeURIComponent(kw):''}`;
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    setSt('himalayas','done');
+    return (d.jobs||[]).map(j => ({
+      id:'hi-'+j.id, src:'himalayas',
+      title:j.title, company:j.company?.name||'Unknown',
+      location:j.locationRestrictions?.join(', ')||'Remote', type:'Remote',
+      salary:j.salary||'Not disclosed',
+      desc:strip(j.description||j.descriptionHtml||'').slice(0,280),
+      days:daysAgo(j.publishedAt), url:j.applicationLink||j.url||'#',
+    }));
+  } catch(e) { setSt('himalayas','error'); return []; }
+}
+
+async function fetchRemoteOK(kw) {
+  if (!activeSrcs.has('remok')) { setSt('remok','skipped'); return []; }
+  setSt('remok','loading');
+  try {
+    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent('https://remoteok.com/api')}`;
+    const r = await fetch(proxy);
+    if (!r.ok) throw new Error(r.status);
+    const w = await r.json();
+    const data = JSON.parse(w.contents);
+    const kwL = (kw||'').toLowerCase();
+    let list = data.filter(j => j.id && j.position);
+    if (kw) list = list.filter(j =>
+      (j.position||'').toLowerCase().includes(kwL) ||
+      (j.company||'').toLowerCase().includes(kwL) ||
+      (j.tags||[]).some(t => t.toLowerCase().includes(kwL))
+    );
+    setSt('remok','done');
+    return list.slice(0,15).map(j => ({
+      id:'ro-'+j.id, src:'remok',
+      title:j.position, company:j.company||'Unknown',
+      location:j.location||'Remote', type:'Remote',
+      salary:j.salary||'Not disclosed',
+      desc:strip(j.description||'').slice(0,280),
+      days:j.date?daysAgo(new Date(j.date*1000).toISOString()):999,
+      url:j.url||`https://remoteok.com/l/${j.id}`,
+    }));
+  } catch(e) { setSt('remok','error'); return []; }
+}
+
+async function fetchAdzuna(kw, loc) {
+  if (!activeSrcs.has('adzuna')) { setSt('adzuna','skipped'); return []; }
+  if (!keys.azId || !keys.azKey) { setSt('adzuna','skipped'); return []; }
+  setSt('adzuna','loading');
+  try {
+    let url = `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${keys.azId}&app_key=${keys.azKey}&what=${encodeURIComponent(kw)}&results_per_page=15&content-type=application/json`;
+    if (loc) url += `&where=${encodeURIComponent(loc)}`;
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    setSt('adzuna','done');
+    return (d.results||[]).map(j => ({
+      id:'az-'+j.id, src:'adzuna',
+      title:j.title, company:j.company?.display_name||'Unknown',
+      location:j.location?.display_name||loc||'Unknown',
+      type:j.contract_time==='part_time'?'Part-time':'Full-time',
+      salary:j.salary_min?`$${Math.round(j.salary_min).toLocaleString()} – $${Math.round(j.salary_max||j.salary_min).toLocaleString()}`:'Not disclosed',
+      desc:strip(j.description).slice(0,280),
+      days:daysAgo(j.created), url:j.redirect_url||'#',
+    }));
+  } catch(e) { setSt('adzuna','error'); return []; }
+}
+
+async function fetchJSearch(kw, loc) {
+  if (!activeSrcs.has('jsearch')) { setSt('jsearch','skipped'); return []; }
+  if (!keys.js) { setSt('jsearch','skipped'); return []; }
+  setSt('jsearch','loading');
+  try {
+    const q = encodeURIComponent(kw + (loc?' in '+loc:''));
+    const r = await fetch(`https://jsearch.p.rapidapi.com/search?query=${q}&num_pages=1`, {
+      headers:{ 'X-RapidAPI-Key':keys.js, 'X-RapidAPI-Host':'jsearch.p.rapidapi.com' }
+    });
+    if (!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    setSt('jsearch','done');
+    return (d.data||[]).map(j => ({
+      id:'js-'+j.job_id, src:'jsearch',
+      title:j.job_title, company:j.employer_name||'Unknown',
+      location:[j.job_city,j.job_state].filter(Boolean).join(', ')||(j.job_is_remote?'Remote':'Unknown'),
+      type:j.job_employment_type==='PARTTIME'?'Part-time':j.job_employment_type==='CONTRACTOR'?'Contract':j.job_employment_type==='INTERN'?'Internship':'Full-time',
+      salary:j.job_min_salary?`$${Math.round(j.job_min_salary).toLocaleString()} – $${Math.round(j.job_max_salary||j.job_min_salary).toLocaleString()}`:'Not disclosed',
+      desc:(j.job_description||'').slice(0,280),
+      days:daysAgo(j.job_posted_at_datetime_utc),
+      url:j.job_apply_link||j.job_google_link||'#',
+    }));
+  } catch(e) { setSt('jsearch','error'); return []; }
+}
+
+async function fetchUSAJobs(kw, loc) {
+  if (!activeSrcs.has('usajobs')) { setSt('usajobs','skipped'); return []; }
+  if (!keys.usaEmail || !keys.usaKey) { setSt('usajobs','skipped'); return []; }
+  setSt('usajobs','loading');
+  try {
+    const p = new URLSearchParams({ Keyword:kw, ResultsPerPage:15 });
+    if (loc) p.set('LocationName', loc);
+    const r = await fetch(`https://data.usajobs.gov/api/search?${p}`, {
+      headers:{ 'Authorization-Key':keys.usaKey, 'User-Agent':keys.usaEmail, 'Host':'data.usajobs.gov' }
+    });
+    if (!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    setSt('usajobs','done');
+    return (d?.SearchResult?.SearchResultItems||[]).map(item => {
+      const p = item.MatchedObjectDescriptor;
+      const rem = p?.PositionRemuneration?.[0];
+      const l2 = p?.PositionLocation?.[0];
+      return {
+        id:'usa-'+p.PositionID, src:'usajobs',
+        title:p.PositionTitle, company:p.DepartmentName||'US Government',
+        location:l2?`${l2.CityName}, ${l2.StateCode}`:'USA', type:'Full-time',
+        salary:rem?`$${Math.round(rem.MinimumRange).toLocaleString()} – $${Math.round(rem.MaximumRange).toLocaleString()}`:'Gov Scale',
+        desc:strip(p.UserArea?.Details?.JobSummary||p.QualificationSummary||'').slice(0,280),
+        days:daysAgo(p.PublicationStartDate),
+        url:p.PositionURI||p.ApplyURI?.[0]||'#',
+      };
+    });
+  } catch(e) { setSt('usajobs','error'); return []; }
+}
+
+// ── Main search ──
+async function doSearch() {
+  const kw  = document.getElementById('kw').value.trim();
+  const loc = document.getElementById('loc').value.trim();
+  if (!kw) { document.getElementById('kw').focus(); return; }
+
+  const btn = document.getElementById('sbtn');
+  btn.disabled = true;
+  btn.querySelector('span').textContent = '…';
+  showSB();
+  Object.keys(srcNames).forEach(s => setSt(s,'skipped'));
+  document.getElementById('rsec').style.display = 'block';
+  document.getElementById('rgrid').innerHTML = `
+    <div class="statebox">
+      <div class="spin"></div>
+      <h3>HUNTING JOBS</h3>
+      <p>Querying all 8 sources simultaneously…</p>
+    </div>`;
+  document.getElementById('rsec').scrollIntoView({ behavior:'smooth', block:'start' });
+
+  const [mu,rm,jc,hi,ro,az,js,usa] = await Promise.all([
+    fetchMuse(kw,loc), fetchRemotive(kw), fetchJobicy(kw),
+    fetchHimalayas(kw), fetchRemoteOK(kw),
+    fetchAdzuna(kw,loc), fetchJSearch(kw,loc), fetchUSAJobs(kw,loc),
+  ]);
+
+  jobs = [...mu,...rm,...jc,...hi,...ro,...az,...js,...usa];
+  render();
+  btn.disabled = false;
+  btn.querySelector('span').textContent = 'SEARCH';
+}
+
+// ── Render ──
+function render() {
+  let list = jobs.filter(j => activeSrcs.has(j.src));
+  if (activeDays !== 'any') list = list.filter(j => j.days <= parseInt(activeDays));
+  if (activeType !== 'all') list = list.filter(j => j.type === activeType);
+  if (document.getElementById('sortsel').value === 'recent') list.sort((a,b) => a.days-b.days);
+
+  const kw  = document.getElementById('kw').value.trim();
+  const loc = document.getElementById('loc').value.trim();
+  document.getElementById('rc').innerHTML =
+    `<strong>${list.length}</strong> live results for <strong style="color:var(--text)">"${kw}"</strong>${loc?` in <strong style="color:var(--text)">${loc}</strong>`:''}`;
+
+  if (!list.length) {
+    document.getElementById('rgrid').innerHTML = `
+      <div class="statebox">
+        <span class="ico">🔍</span>
+        <h3>NO RESULTS</h3>
+        <p>Try broader terms or adjust your filters.<br>Free sources work instantly — no keys needed.</p>
+      </div>`;
+    return;
+  }
+
+  const palette = ['#e8321a','#f07820','#ffaa44','#ff6b00','#c8281a','#e05830','#d44010','#f09040'];
+
+  document.getElementById('rgrid').innerHTML = list.map((j,i) => {
+    const init = j.company.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||'?';
+    const col  = palette[init.charCodeAt(0) % palette.length];
+    return `
+    <div class="jcard" data-s="${j.src}" style="animation-delay:${i*.03}s">
+      <div class="ctop">
+        <div class="clogo" style="color:${col}">${init}</div>
+        <div class="sbadge">${srcNames[j.src]}</div>
+      </div>
+      <div class="jtitle">${j.title}</div>
+      <div class="jco">${j.company}</div>
+      <div class="jmeta">
+        <div class="mp loc">📍 ${j.location}</div>
+        <div class="mp typ">${j.type}</div>
+        ${j.salary!=='Not disclosed'?`<div class="mp sal">💰 ${j.salary}`+`</div>`:''}
+      </div>
+      <div class="jdesc">${j.desc||'No description available.'}</div>
+      <div class="cfoot">
+        <div class="jtime">⏱ ${fmtDays(j.days)}</div>
+        <a class="abtn" href="${j.url}" target="_blank" rel="noopener">APPLY →</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Init ──
+document.getElementById('kw').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+document.getElementById('loc').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeDrawer(); });
+loadKeys();
+updateKeyStatus();
+</script>
+</body>
+</html>
