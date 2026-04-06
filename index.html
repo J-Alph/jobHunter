@@ -31,10 +31,7 @@
   --c-jsearch:  #e05830;
   --c-usajobs:  #d44010;
   --c-remok:    #f09040;
-  --c-jooble:   #e84040;
-  --c-careerjet:#f05010;
-  --c-whatjobs: #ff8c20;
-  --c-rise:     #ffb340;
+  --c-govj:     #b06020;
 }
 
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -480,10 +477,7 @@ header {
 .jcard[data-s="jsearch"]::after   { background:var(--c-jsearch); }
 .jcard[data-s="usajobs"]::after   { background:var(--c-usajobs); }
 .jcard[data-s="remok"]::after     { background:var(--c-remok); }
-.jcard[data-s="jooble"]::after    { background:var(--c-jooble); }
-.jcard[data-s="careerjet"]::after { background:var(--c-careerjet); }
-.jcard[data-s="whatjobs"]::after  { background:var(--c-whatjobs); }
-.jcard[data-s="rise"]::after      { background:var(--c-rise); }
+.jcard[data-s="govj"]::after      { background:var(--c-govj); }
 
 .ctop {
   display:flex; align-items:flex-start;
@@ -634,8 +628,8 @@ header {
         </div>
       </div>
       <div class="ddesc" style="color:var(--muted);">
-        <strong style="color:var(--text)">The Muse · Remotive · Jobicy · Himalayas · RemoteOK · Rise</strong><br>
-        These 6 sources work immediately with zero setup. Keys below unlock 6 additional sources.
+        <strong style="color:var(--text)">The Muse · Remotive · Jobicy · Himalayas · RemoteOK · State Gov</strong><br>
+        These 6 sources work immediately with zero setup. Keys below unlock 3 additional sources.
       </div>
     </div>
 
@@ -695,42 +689,6 @@ header {
       </div>
     </div>
 
-    <!-- Jooble -->
-    <div class="dsec">
-      <div class="dsec-head">
-        <div class="dsec-name"><div class="ddot" style="background:var(--c-jooble)"></div>JOOBLE</div>
-        <a class="dlink" href="https://jooble.org/api/about" target="_blank">Free signup →</a>
-      </div>
-      <div class="ddesc">Free · Large global job aggregator · 70M+ monthly users · US-focused search</div>
-      <div class="dinputs">
-        <div class="dig"><label>API KEY</label><input id="jooble-key" type="password" placeholder="your jooble key"/></div>
-      </div>
-    </div>
-
-    <!-- CareerJet -->
-    <div class="dsec">
-      <div class="dsec-head">
-        <div class="dsec-name"><div class="ddot" style="background:var(--c-careerjet)"></div>CAREERJET</div>
-        <a class="dlink" href="https://www.careerjet.com/partners/api/" target="_blank">Free signup →</a>
-      </div>
-      <div class="ddesc">Free · 1000 req/hr · Global job aggregator · Strong US coverage across all industries</div>
-      <div class="dinputs">
-        <div class="dig"><label>AFFILIATE KEY</label><input id="cj-key" type="password" placeholder="your affiliate key"/></div>
-      </div>
-    </div>
-
-    <!-- WhatJobs -->
-    <div class="dsec">
-      <div class="dsec-head">
-        <div class="dsec-name"><div class="ddot" style="background:var(--c-whatjobs)"></div>WHATJOBS</div>
-        <a class="dlink" href="https://www.whatjobs.com/affiliates" target="_blank">Free signup →</a>
-      </div>
-      <div class="ddesc">Free affiliate API · US jobs aggregator · Contact WhatJobs team for access</div>
-      <div class="dinputs">
-        <div class="dig"><label>API KEY</label><input id="wj-key" type="password" placeholder="your whatjobs key"/></div>
-      </div>
-    </div>
-
     <div class="save-btn-row">
       <button class="btn-save" onclick="saveKeys()">SAVE KEYS</button>
       <button class="btn-clear" onclick="clearKeys()">CLEAR</button>
@@ -768,10 +726,10 @@ header {
         <span class="line1">FIND YOUR</span>
         <span class="line2">NEXT MOVE</span>
       </h1>
-      <p class="hero-sub">Real-time results pulled from 12 job sources simultaneously</p>
+      <p class="hero-sub">Real-time results pulled from 9 job sources simultaneously</p>
       <div class="src-count">
         <div class="blink"></div>
-        12 SOURCES ACTIVE — 6 FREE + 6 WITH KEYS
+        9 SOURCES ACTIVE — 6 FREE + 3 WITH KEYS
       </div>
 
       <!-- Search -->
@@ -821,13 +779,10 @@ header {
         <div class="spill on" data-s="jobicy"    onclick="toggleSrc(this)"><div class="sd"></div>Jobicy</div>
         <div class="spill on" data-s="himalayas" onclick="toggleSrc(this)"><div class="sd"></div>Himalayas</div>
         <div class="spill on" data-s="remok"     onclick="toggleSrc(this)"><div class="sd"></div>RemoteOK</div>
-        <div class="spill on" data-s="rise"      onclick="toggleSrc(this)"><div class="sd"></div>Rise</div>
         <div class="spill on" data-s="adzuna"    onclick="toggleSrc(this)"><div class="sd"></div>Adzuna</div>
         <div class="spill on" data-s="jsearch"   onclick="toggleSrc(this)"><div class="sd"></div>JSearch</div>
         <div class="spill on" data-s="usajobs"   onclick="toggleSrc(this)"><div class="sd"></div>USAJobs</div>
-        <div class="spill on" data-s="jooble"    onclick="toggleSrc(this)"><div class="sd"></div>Jooble</div>
-        <div class="spill on" data-s="careerjet" onclick="toggleSrc(this)"><div class="sd"></div>CareerJet</div>
-        <div class="spill on" data-s="whatjobs"  onclick="toggleSrc(this)"><div class="sd"></div>WhatJobs</div>
+        <div class="spill on" data-s="govj"      onclick="toggleSrc(this)"><div class="sd"></div>State Gov</div>
       </div>
 
       <!-- Status bar -->
@@ -837,13 +792,10 @@ header {
         <div class="sit" id="st-jobicy">Jobicy</div>
         <div class="sit" id="st-himalayas">Himalayas</div>
         <div class="sit" id="st-remok">RemoteOK</div>
-        <div class="sit" id="st-rise">Rise</div>
         <div class="sit" id="st-adzuna">Adzuna</div>
         <div class="sit" id="st-jsearch">JSearch</div>
         <div class="sit" id="st-usajobs">USAJobs</div>
-        <div class="sit" id="st-jooble">Jooble</div>
-        <div class="sit" id="st-careerjet">CareerJet</div>
-        <div class="sit" id="st-whatjobs">WhatJobs</div>
+        <div class="sit" id="st-govj">State Gov</div>
       </div>
     </div>
   </section>
@@ -866,7 +818,7 @@ let keys = {};
 let jobs = [];
 let activeDays = 'any';
 let activeType = 'all';
-let activeSrcs = new Set(['muse','remotive','jobicy','himalayas','remok','rise','adzuna','jsearch','usajobs','jooble','careerjet','whatjobs']);
+let activeSrcs = new Set(['muse','remotive','jobicy','himalayas','remok','adzuna','jsearch','usajobs','govj']);
 
 // ── Drawer ──
 function openDrawer() {
@@ -887,9 +839,6 @@ function saveKeys() {
     usaEmail:  document.getElementById('usa-email').value.trim(),
     usaKey:    document.getElementById('usa-key').value.trim(),
     muse:      document.getElementById('mu-key').value.trim(),
-    jooble:    document.getElementById('jooble-key').value.trim(),
-    cj:        document.getElementById('cj-key').value.trim(),
-    wj:        document.getElementById('wj-key').value.trim(),
   };
   localStorage.setItem('jp4_keys', JSON.stringify(keys));
   updateKeyStatus();
@@ -900,7 +849,7 @@ function clearKeys() {
   if (!confirm('Clear all saved API keys?')) return;
   localStorage.removeItem('jp4_keys');
   keys = {};
-  ['az-id','az-key','js-key','usa-email','usa-key','mu-key','jooble-key','cj-key','wj-key'].forEach(id => {
+  ['az-id','az-key','js-key','usa-email','usa-key','mu-key'].forEach(id => {
     document.getElementById(id).value = '';
   });
   updateKeyStatus();
@@ -910,25 +859,22 @@ function loadKeys() {
   const s = localStorage.getItem('jp4_keys');
   if (!s) return;
   keys = JSON.parse(s);
-  if (keys.azId)      document.getElementById('az-id').value      = keys.azId;
-  if (keys.azKey)     document.getElementById('az-key').value     = keys.azKey;
-  if (keys.js)        document.getElementById('js-key').value     = keys.js;
-  if (keys.usaEmail)  document.getElementById('usa-email').value  = keys.usaEmail;
-  if (keys.usaKey)    document.getElementById('usa-key').value    = keys.usaKey;
-  if (keys.muse)      document.getElementById('mu-key').value     = keys.muse;
-  if (keys.jooble)    document.getElementById('jooble-key').value = keys.jooble;
-  if (keys.cj)        document.getElementById('cj-key').value     = keys.cj;
-  if (keys.wj)        document.getElementById('wj-key').value     = keys.wj;
+  if (keys.azId)      document.getElementById('az-id').value    = keys.azId;
+  if (keys.azKey)     document.getElementById('az-key').value   = keys.azKey;
+  if (keys.js)        document.getElementById('js-key').value   = keys.js;
+  if (keys.usaEmail)  document.getElementById('usa-email').value= keys.usaEmail;
+  if (keys.usaKey)    document.getElementById('usa-key').value  = keys.usaKey;
+  if (keys.muse)      document.getElementById('mu-key').value   = keys.muse;
 }
 
 function updateKeyStatus() {
-  const count = [keys.azId && keys.azKey, keys.js, keys.usaEmail && keys.usaKey, keys.jooble, keys.cj, keys.wj]
+  const count = [keys.azId && keys.azKey, keys.js, keys.usaEmail && keys.usaKey]
     .filter(Boolean).length;
   const el = document.getElementById('keys-status');
   const txt = document.getElementById('keys-status-text');
   if (count > 0) {
     el.className = 'keys-status has-keys';
-    txt.textContent = `${count}/6 keys saved`;
+    txt.textContent = `${count}/3 keys saved`;
   } else {
     el.className = 'keys-status no-keys';
     txt.textContent = 'No API keys saved';
@@ -951,12 +897,9 @@ function toggleSrc(el) {
 }
 
 // ── Status bar ──
-const srcNames = {
-  muse:'The Muse', remotive:'Remotive', jobicy:'Jobicy',
-  himalayas:'Himalayas', remok:'RemoteOK', rise:'Rise',
-  adzuna:'Adzuna', jsearch:'JSearch', usajobs:'USAJobs',
-  jooble:'Jooble', careerjet:'CareerJet', whatjobs:'WhatJobs'
-};
+const srcNames = { muse:'The Muse', remotive:'Remotive', jobicy:'Jobicy',
+  himalayas:'Himalayas', remok:'RemoteOK', adzuna:'Adzuna',
+  jsearch:'JSearch', usajobs:'USAJobs', govj:'State Gov' };
 
 function setSt(src, state) {
   const el = document.getElementById('st-' + src);
@@ -1180,134 +1123,45 @@ async function fetchUSAJobs(kw, loc) {
   } catch(e) { setSt('usajobs','error'); return []; }
 }
 
-// ── Rise (joinrise.io) — FREE, no key ──
-async function fetchRise(kw, loc) {
-  if (!activeSrcs.has('rise')) { setSt('rise','skipped'); return []; }
-  setSt('rise','loading');
+async function fetchGovJobs(kw, loc) {
+  if (!activeSrcs.has('govj')) { setSt('govj','skipped'); return []; }
+  setSt('govj','loading');
   try {
-    const p = new URLSearchParams({ limit:20 });
-    if (kw)  p.set('search', kw);
-    if (loc) p.set('location', loc);
-    const r = await fetch(`https://api.joinrise.io/api/v1/jobs/public?${p}`);
-    if (!r.ok) throw new Error(r.status);
-    const d = await r.json();
-    setSt('rise','done');
-    return (d.jobs||d.data||d.results||[]).map(j => ({
-      id:'ri-'+(j.id||j._id||Math.random()),
-      src:'rise',
-      title: j.title||j.job_title||'Unknown',
-      company: j.company||j.company_name||j.employer||'Unknown',
-      location: j.location||j.city||(j.remote?'Remote':'Unknown'),
-      type: j.employment_type==='part_time'?'Part-time':j.employment_type==='contract'?'Contract':j.employment_type==='internship'?'Internship':j.remote?'Remote':'Full-time',
-      salary: j.salary_min?`$${Number(j.salary_min).toLocaleString()} – $${Number(j.salary_max||j.salary_min).toLocaleString()}`:(j.salary||'Not disclosed'),
-      desc: strip(j.description||j.summary||'').slice(0,280),
-      days: daysAgo(j.created_at||j.posted_at||j.date),
-      url: j.url||j.apply_url||j.link||'#',
-    }));
-  } catch(e) { setSt('rise','error'); return []; }
-}
-
-// ── Jooble — requires free key from jooble.org/api/about ──
-async function fetchJooble(kw, loc) {
-  if (!activeSrcs.has('jooble')) { setSt('jooble','skipped'); return []; }
-  if (!keys.jooble) { setSt('jooble','skipped'); return []; }
-  setSt('jooble','loading');
-  try {
-    const body = JSON.stringify({ keywords: kw, location: loc||'', resultonpage: 15 });
-    const r = await fetch(`https://jooble.org/api/${keys.jooble}`, {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body,
+    // GovernmentJobs.com (NeoGov) public JSON feed — covers 35+ states
+    const params = new URLSearchParams({
+      keyword: kw || '',
+      jobType: '0',
+      pageSize: '20',
+      pageNumber: '0',
+      sortField: 'score',
+      sortDirection: 'desc',
     });
-    if (!r.ok) throw new Error(r.status);
-    const d = await r.json();
-    setSt('jooble','done');
-    return (d.jobs||[]).map(j => ({
-      id:'jo-'+(j.id||Math.random()),
-      src:'jooble',
-      title: j.title||'Unknown',
-      company: j.company||'Unknown',
-      location: j.location||loc||'Unknown',
-      type: j.type?.toLowerCase().includes('part')?'Part-time':j.type?.toLowerCase().includes('contract')?'Contract':j.type?.toLowerCase().includes('intern')?'Internship':'Full-time',
-      salary: j.salary||'Not disclosed',
-      desc: strip(j.snippet||j.description||'').slice(0,280),
-      days: daysAgo(j.updated||j.date),
-      url: j.link||'#',
-    }));
-  } catch(e) { setSt('jooble','error'); return []; }
-}
-
-// ── CareerJet — requires free affiliate key from careerjet.com/partners ──
-async function fetchCareerJet(kw, loc) {
-  if (!activeSrcs.has('careerjet')) { setSt('careerjet','skipped'); return []; }
-  if (!keys.cj) { setSt('careerjet','skipped'); return []; }
-  setSt('careerjet','loading');
-  try {
-    const p = new URLSearchParams({
-      keywords: kw,
-      location: loc||'USA',
-      affid: keys.cj,
-      user_ip: '1.0.0.1',
-      url: 'http://www.example.com/jobs',
-      sort: 'date',
-      pagesize: 15,
-    });
-    // CareerJet requires JSONP or server-side; use allorigins proxy to bypass CORS
-    const apiUrl = `https://www.careerjet.net/jobsearch/api/v2/en_US?${p}`;
+    if (loc) params.set('location', loc);
+    const apiUrl = `https://www.governmentjobs.com/api/open/jobs?${params}`;
     const proxy  = `https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`;
     const r = await fetch(proxy);
     if (!r.ok) throw new Error(r.status);
     const w = await r.json();
     const d = JSON.parse(w.contents);
-    setSt('careerjet','done');
-    return (d.jobs||[]).map(j => ({
-      id:'cj-'+(j.url||Math.random()).toString().slice(-8),
-      src:'careerjet',
-      title: j.title||'Unknown',
-      company: j.company||'Unknown',
-      location: j.locations||loc||'Unknown',
-      type: j.jobtype?.toLowerCase().includes('part')?'Part-time':j.jobtype?.toLowerCase().includes('contract')?'Contract':'Full-time',
-      salary: j.salary||'Not disclosed',
-      desc: strip(j.description||j.snippet||'').slice(0,280),
-      days: daysAgo(j.date),
-      url: j.url||'#',
-    }));
-  } catch(e) { setSt('careerjet','error'); return []; }
-}
-
-// ── WhatJobs — requires free affiliate key ──
-async function fetchWhatJobs(kw, loc) {
-  if (!activeSrcs.has('whatjobs')) { setSt('whatjobs','skipped'); return []; }
-  if (!keys.wj) { setSt('whatjobs','skipped'); return []; }
-  setSt('whatjobs','loading');
-  try {
-    const p = new URLSearchParams({
-      what: kw,
-      where: loc||'USA',
-      api_key: keys.wj,
-      resultsperpage: 15,
-      country: 'us',
-    });
-    const apiUrl = `https://api.whatjobs.com/v1/jobs?${p}`;
-    const proxy  = `https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`;
-    const r = await fetch(proxy);
-    if (!r.ok) throw new Error(r.status);
-    const w = await r.json();
-    const d = JSON.parse(w.contents);
-    setSt('whatjobs','done');
-    return (d.jobs||d.results||[]).map(j => ({
-      id:'wj-'+(j.id||Math.random()),
-      src:'whatjobs',
-      title: j.title||'Unknown',
-      company: j.company||'Unknown',
-      location: j.location||loc||'Unknown',
-      type: j.job_type?.toLowerCase().includes('part')?'Part-time':j.job_type?.toLowerCase().includes('contract')?'Contract':'Full-time',
-      salary: j.salary||'Not disclosed',
-      desc: strip(j.description||j.snippet||'').slice(0,280),
-      days: daysAgo(j.date_posted||j.date),
-      url: j.url||j.apply_url||'#',
-    }));
-  } catch(e) { setSt('whatjobs','error'); return []; }
+    setSt('govj','done');
+    return ((d.data || d.value || d) instanceof Array ? (d.data || d.value || d) : [])
+      .slice(0,15)
+      .map(j => ({
+        id: 'gj-' + (j.jobId || j.id || Math.random()),
+        src: 'govj',
+        title: j.jobTitle || j.title || 'Unknown',
+        company: j.agencyName || j.department || j.employer || 'State/Local Gov',
+        location: [j.cityName || j.city, j.stateCode || j.state].filter(Boolean).join(', ') || loc || 'USA',
+        type: j.partTime ? 'Part-time' : j.temporary ? 'Contract' : 'Full-time',
+        salary: j.salaryMin
+          ? `$${Math.round(j.salaryMin).toLocaleString()} – $${Math.round(j.salaryMax || j.salaryMin).toLocaleString()}`
+          : (j.salary || 'Gov Scale'),
+        desc: strip(j.description || j.jobDescription || '').slice(0, 280),
+        days: daysAgo(j.openDate || j.postingDate || j.openFillingDate),
+        url: j.applyURL || j.apply_url ||
+          (j.jobId ? `https://www.governmentjobs.com/careers/city/jobs/${j.jobId}` : '#'),
+      }));
+  } catch(e) { setSt('govj','error'); return []; }
 }
 
 // ── Main search ──
@@ -1326,18 +1180,18 @@ async function doSearch() {
     <div class="statebox">
       <div class="spin"></div>
       <h3>HUNTING JOBS</h3>
-      <p>Querying all 12 sources simultaneously…</p>
+      <p>Querying all 9 sources simultaneously…</p>
     </div>`;
   document.getElementById('rsec').scrollIntoView({ behavior:'smooth', block:'start' });
 
-  const [mu,rm,jc,hi,ro,ri,az,js,usa,jo,cj,wj] = await Promise.all([
+  const [mu,rm,jc,hi,ro,az,js,usa,gj] = await Promise.all([
     fetchMuse(kw,loc), fetchRemotive(kw), fetchJobicy(kw),
-    fetchHimalayas(kw), fetchRemoteOK(kw), fetchRise(kw,loc),
+    fetchHimalayas(kw), fetchRemoteOK(kw),
     fetchAdzuna(kw,loc), fetchJSearch(kw,loc), fetchUSAJobs(kw,loc),
-    fetchJooble(kw,loc), fetchCareerJet(kw,loc), fetchWhatJobs(kw,loc),
+    fetchGovJobs(kw,loc),
   ]);
 
-  jobs = [...mu,...rm,...jc,...hi,...ro,...ri,...az,...js,...usa,...jo,...cj,...wj];
+  jobs = [...mu,...rm,...jc,...hi,...ro,...az,...js,...usa,...gj];
   render();
   btn.disabled = false;
   btn.querySelector('span').textContent = 'SEARCH';
